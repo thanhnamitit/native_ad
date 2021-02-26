@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_plugin/ad/native_ad_controller.dart';
+
+import 'native_ad_controller.dart';
 
 class NativeAd extends StatelessWidget {
   final NativeAdController controller;

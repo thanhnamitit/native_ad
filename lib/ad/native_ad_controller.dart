@@ -17,6 +17,9 @@ class NativeAdController {
   NativeAdController({this.adUnit, this.numOfAds = 1}) {
     _channel = MethodChannel(id);
     _channel.setMethodCallHandler(_handleMessages);
+  }
+
+  void load() {
     _pluginChannel.invokeMethod("loadNativeAd", {
       "adUnit": adUnit,
       "numOfAds": numOfAds,

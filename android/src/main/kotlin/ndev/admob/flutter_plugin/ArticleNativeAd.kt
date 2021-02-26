@@ -4,11 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.TextView
-import androidx.cardview.widget.CardView
+import android.widget.*
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
@@ -20,7 +16,7 @@ class ArticleNativeAd @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0,
         private val nativeAd: NativeAd
-) : CardView(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
     val adView by bind<NativeAdView>(R.id.ad_view)
     val mediaView by bind<MediaView>(R.id.ad_media)
     val icon by bind<ImageView>(R.id.ad_icon)

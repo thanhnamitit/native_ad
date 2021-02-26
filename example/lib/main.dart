@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_plugin/ad/native_ad.dart';
-import 'package:flutter_plugin/ad/native_ad_controller.dart';
+import 'package:ndev_flutter_native_ad/ad/native_ad.dart';
+import 'package:ndev_flutter_native_ad/ad/native_ad_controller.dart';
 
 void main() {
   runApp(MyApp());
