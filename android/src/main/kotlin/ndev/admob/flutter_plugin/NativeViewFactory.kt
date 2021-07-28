@@ -6,7 +6,7 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
 class NativeViewFactory(
-        private val nativeAdManager: NativeAdManager
+    private val nativeAdManager: NativeAdManager
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         val creationParams = args as Map<String?, Any?>
@@ -15,6 +15,6 @@ class NativeViewFactory(
         val nativeAd = (nativeAdManager.getAds(adUnit)).let {
             it[adPosition % it.size]
         }
-        return NativePlatformView(context, nativeAd)
+        return NativePlatformView(context, nativeAd, creationParams);
     }
 }

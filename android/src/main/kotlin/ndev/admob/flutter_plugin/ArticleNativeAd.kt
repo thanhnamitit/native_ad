@@ -1,97 +1,134 @@
 package ndev.admob.flutter_plugin
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions.bitmapTransform
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
+import jp.wasabeef.glide.transformations.BlurTransformation
 
 fun <T : View> View.bind(id: Int) = lazy { findViewById<T>(id) }
 
 class ArticleNativeAd @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0,
-        private val nativeAd: NativeAd
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+    private val nativeAd: NativeAd,
+    titleColor: Long? = null,
+    accentColor: Long? = null
 ) : FrameLayout(context, attrs, defStyleAttr) {
     val adView by bind<NativeAdView>(R.id.ad_view)
-    val mediaView by bind<MediaView>(R.id.ad_media)
-    val icon by bind<ImageView>(R.id.ad_icon)
-    val advertiser by bind<TextView>(R.id.ad_advertiser)
-    val headline by bind<TextView>(R.id.ad_headline)
-    val body by bind<TextView>(R.id.ad_body)
-    val stars by bind<RatingBar>(R.id.ad_stars)
-    val callToAction by bind<Button>(R.id.ad_call_to_action)
 
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.native_ad_song_style_1, this)
-        bindViewToAdView()
-        bindDataToView()
-    }
+        LayoutInflater.from(context).inflate(R.layout.ad_unified, this)
+        adView.mediaView = adView.findViewById<MediaView>(R.id.ad_media)
+        adView.headlineView = adView.findViewById(R.id.ad_headline)
+        adView.bodyView = adView.findViewById(R.id.ad_body)
+        adView.callToActionView = adView.findViewById(R.id.ad_call_to_action)
+        adView.iconView = adView.findViewById(R.id.ad_app_icon)
+        adView.priceView = adView.findViewById(R.id.ad_price)
+        adView.starRatingView = adView.findViewById(R.id.ad_stars)
+        adView.storeView = adView.findViewById(R.id.ad_store)
+        adView.advertiserView = adView.findViewById(R.id.ad_advertiser)
 
-    private fun bindViewToAdView() {
-        adView.mediaView = mediaView
-        adView.iconView = icon
-        adView.advertiserView = advertiser
-        adView.headlineView = headline
-        adView.bodyView = body
-        adView.starRatingView = stars
-        adView.callToActionView = callToAction
-    }
+        // The headline and media content are guaranteed to be in every UnifiedNativeAd.
 
-    private fun bindDataToView() {
-
-        // Some assets are guaranteed to be in every UnifiedNativeAd.
-        mediaView?.setMediaContent(nativeAd.mediaContent)
-        mediaView?.setImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
-
-        headline.text = nativeAd.headline
-        body?.text = nativeAd.body
-        (adView.callToActionView as Button).text = nativeAd.callToAction
-
-        // These assets aren't guaranteed to be in every UnifiedNativeAd, so it's important to
-        // check before trying to display them.
-        val icon = nativeAd.icon
-
-        if (icon == null) {
-            adView.iconView.visibility = View.GONE
-        } else {
-            (adView.iconView as ImageView).setImageDrawable(icon.drawable)
-            adView.iconView.visibility = View.VISIBLE
+        val textColor = titleColor?.toInt() ?: Color.WHITE
+        val accentColor = accentColor?.toInt() ?: Color.WHITE
+        (adView.headlineView as TextView).apply {
+            text = nativeAd.headline
+            setTextColor(textColor)
         }
 
-//        if (nativeAd.price == null) {
-//            adPrice?.visibility = View.INVISIBLE
-//        } else {
-//            adPrice?.visibility = View.VISIBLE
-//            adPrice?.text = nativeAd.price
-//        }
-//
-//        if (nativeAd.store == null) {
-//            adStore?.visibility = View.INVISIBLE
-//        } else {
-//            adStore?.text = nativeAd.store
-//        }
+        adView.mediaView.setMediaContent(nativeAd.mediaContent)
+
+        if (nativeAd.body == null) {
+            adView.bodyView.visibility = View.INVISIBLE
+        } else {
+            adView.bodyView.visibility = View.VISIBLE
+            (adView.bodyView as TextView).apply {
+                text = nativeAd.body
+                setTextColor(textColor)
+            }
+        }
+
+        if (nativeAd.callToAction == null) {
+            adView.callToActionView.visibility = View.GONE
+        } else {
+            adView.callToActionView.visibility = View.VISIBLE
+            (adView.callToActionView as Button).apply {
+                text = nativeAd.callToAction
+//                setBackgroundColor(accentColor)
+            }
+        }
+
+        val iconView = adView.iconView as ImageView
+
+        if (nativeAd.icon != null) {
+            iconView.setImageDrawable(
+                nativeAd.icon.drawable
+            )
+        } else if (nativeAd.mediaContent.mainImage != null) {
+            iconView.setImageDrawable(
+                nativeAd.mediaContent.mainImage
+            )
+            iconView.scaleType = ImageView.ScaleType.CENTER_CROP
+        }
+
+        if (nativeAd.price == null) {
+            adView.priceView.visibility = View.GONE
+        } else {
+            adView.priceView.visibility = View.VISIBLE
+            (adView.priceView as TextView).apply {
+                text = nativeAd.price
+                setTextColor(textColor)
+            }
+        }
+
+        if (nativeAd.store == null) {
+            adView.storeView.visibility = View.GONE
+        } else {
+            adView.storeView.visibility = View.VISIBLE
+            (adView.storeView as TextView).apply {
+                text = nativeAd.store
+                setTextColor(textColor)
+            }
+        }
 
         if (nativeAd.starRating == null) {
-            adView.starRatingView.visibility = View.INVISIBLE
+            adView.starRatingView.visibility = View.GONE
         } else {
-            (adView.starRatingView as RatingBar).rating = nativeAd.starRating!!.toFloat()
+            (adView.starRatingView as RatingBar).apply {
+                rating = nativeAd.starRating!!.toFloat()
+//                DrawableCompat.setTint(progressDrawable, accentColor)
+            }
             adView.starRatingView.visibility = View.VISIBLE
         }
 
         if (nativeAd.advertiser == null) {
-            advertiser.visibility = View.INVISIBLE
+            adView.advertiserView.visibility = View.GONE
         } else {
-            advertiser.visibility = View.VISIBLE
-            advertiser.text = nativeAd.advertiser
+            (adView.advertiserView as TextView).apply {
+                text = nativeAd.advertiser
+                setTextColor(textColor)
+            }
+            adView.advertiserView.visibility = View.VISIBLE
         }
 
-        // Assign native ad object to the native view.
+        val blurImage = adView.findViewById<ImageView>(R.id.blur_image)
+
+        Glide.with(this)
+            .load(nativeAd.mediaContent.mainImage)
+            .apply(bitmapTransform(BlurTransformation(25, 3)))
+            .into(blurImage)
+
         adView.setNativeAd(nativeAd)
     }
 }

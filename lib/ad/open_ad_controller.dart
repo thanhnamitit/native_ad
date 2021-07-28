@@ -11,7 +11,7 @@ class OpenAppAdController {
   final _key = UniqueKey();
 
   String get id => _key.toString();
-  MethodChannel _channel;
+  late MethodChannel _channel;
   final event = StreamController<OpenAppEvent>.broadcast();
   final _pluginChannel = const MethodChannel("ndev.plugin.admob");
 
@@ -23,7 +23,7 @@ class OpenAppAdController {
 
   bool get readyToShow => _readyToShow;
 
-  OpenAppAdController({this.adUnit}) {
+  OpenAppAdController({required this.adUnit}) {
     _channel = MethodChannel(id);
     _channel.setMethodCallHandler(_handleMessages);
   }

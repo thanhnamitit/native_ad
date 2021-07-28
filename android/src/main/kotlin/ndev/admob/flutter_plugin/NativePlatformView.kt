@@ -7,17 +7,24 @@ import io.flutter.plugin.platform.PlatformView
 
 
 class NativePlatformView(
-        context: Context,
-        private val nativeAd: NativeAd
+    context: Context,
+    nativeAd: NativeAd,
+    creationParams: Map<String?, Any?>
 ) : PlatformView {
 
     private val view: View
 
     init {
-        view = ArticleNativeAd(context = context, nativeAd = nativeAd)
+        view = ArticleNativeAd(
+            context = context,
+            nativeAd = nativeAd,
+            titleColor = creationParams["titleColor"] as? Long?,
+            accentColor = creationParams["accentColor"] as? Long?
+        )
     }
 
     override fun getView(): View = view
 
-    override fun dispose() {}
+    override fun dispose() {
+    }
 }

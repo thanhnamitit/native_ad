@@ -10,11 +10,11 @@ class NativeAdController {
   final _key = UniqueKey();
 
   String get id => _key.toString();
-  MethodChannel _channel;
+  late MethodChannel _channel;
   final numOfAdsStream = StreamController<int>.broadcast();
   final _pluginChannel = const MethodChannel("ndev.plugin.admob");
 
-  NativeAdController({this.adUnit, this.numOfAds = 1}) {
+  NativeAdController({required this.adUnit, this.numOfAds = 1}) {
     _channel = MethodChannel(id);
     _channel.setMethodCallHandler(_handleMessages);
   }
